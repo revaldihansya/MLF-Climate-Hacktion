@@ -1,4 +1,4 @@
-# MLF
+# Building Energy Retrofit Optimizer
 
 Building an energy efficient society, one model at a time. 
 
