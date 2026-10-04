@@ -1,0 +1,30 @@
+                 CBECS data
+                     │
+                     ▼
+          MFBTU / SQFT energy intensity
+                     │
+                     ▼
+             Above-mean subset
+                     │
+                     ▼
+             L1 regression
+                     │
+             ┌───────┴────────┐
+             ▼                ▼
+       Predictive        Actionable
+        variables         variables
+             │                │
+             └───────┬────────┘
+                     ▼
+             Energy-intensity
+                  model
+                     │
+                     ▼
+             Genetic Algorithm
+                     │
+                     ▼
+          feasible upgrade packages
+                     │
+                     ▼
+       predicted energy reduction
+

@@ -4,3 +4,13 @@
 
 # docx files
 *.docx
+
+# venv
+.venv
+
+# shell scripts
+*.sh
+
+# useless stuff
+test.py
+results
