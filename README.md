@@ -45,7 +45,7 @@ Following our attempt, future endevours should explore these suggestions:
 * **Use of AI:** We used GPT-6.1 and Sonnet 5.5 to help generate code and brainstorm our methodology for this project. 
 * **Dataset:** Our dataset comes from the 2018 Commercial Buildings Energy Consumption Survey final results (https://www.eia.gov/consumption/commercial/).
 
-### Contrbutors
+### Contributors
 * Revaldi Hansya Widjanarka
 * Alvin Young
 * Michael Wijaya Siputro
