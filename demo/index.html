@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building Energy Retrofit Optimizer — Project Demo</title>
+<style>
+:root{--bg:#f5f7f4;--card:#fff;--ink:#17211b;--muted:#65736a;--accent:#16845a;--accent2:#dff3e8;--line:#dce4de;--warn:#b66a16}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:#10241a;color:white;padding:28px 6vw} header h1{margin:0 0 7px;font-size:30px} header p{margin:0;color:#cfe2d7}
+main{max-width:1180px;margin:26px auto;padding:0 20px}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 5px 20px rgba(0,0,0,.04);margin-bottom:18px}
+h2{margin:0 0 15px;font-size:20px}.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.step{background:var(--accent2);padding:10px 12px;border-radius:10px;font-weight:650}.arrow{color:var(--muted)}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{border:1px solid var(--line);border-radius:12px;padding:15px}.metric b{font-size:28px;display:block;color:var(--accent)}.metric span{color:var(--muted)}
+.controls label{display:block;font-weight:650;margin:13px 0 6px}.controls input[type=range]{width:100%}.upgrades{display:grid;grid-template-columns:1fr 1fr;gap:8px}.upgrades label{font-weight:500;margin:0;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fafcfb}.result{background:#10241a;color:white;border-radius:14px;padding:18px;margin-top:15px}.result .big{font-size:36px;font-weight:800}.bar{height:14px;background:#dce7df;border-radius:8px;overflow:hidden;margin:10px 0}.bar i{display:block;height:100%;background:#2fbf7a}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:9px;border-bottom:1px solid var(--line);text-align:left}.table th{color:var(--muted);font-size:13px}.note{font-size:13px;color:var(--muted);line-height:1.5}.warning{color:var(--warn);font-weight:650}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}.upgrades{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Building Energy Retrofit Optimizer</h1>
+  <p>CBECS 2018 • Energy intensity • L1 regression • Feasible genetic-algorithm upgrades</p>
+</header>
+<main>
+  <div class="card">
+    <h2>1. What the pipeline does</h2>
+    <div class="flow">
+      <div class="step">CBECS data</div><div class="arrow">→</div>
+      <div class="step">MFBTU / SQFT</div><div class="arrow">→</div>
+      <div class="step">Above-mean buildings</div><div class="arrow">→</div>
+      <div class="step">L1 regression</div><div class="arrow">→</div>
+      <div class="step">Actionable variables</div><div class="arrow">→</div>
+      <div class="step">Genetic algorithm</div><div class="arrow">→</div>
+      <div class="step">Upgrade package</div>
+    </div>
+  </div>
+
+  
+<div class="grid">
+  <section>
+    <div class="card">
+      <h2>2. Explore an optimized building</h2>
+      <p class="note">Select one of the five highest-performing buildings found by our genetic algorithm. Every value below comes directly from the project output.</p>
+
+      <div class="controls">
+        <label for="buildingSelect">Example building</label>
+        <select id="buildingSelect" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:white;font-size:15px">
+          <option value="4724">Building 4724 — highest predicted improvement</option>
+          <option value="1771">Building 1771</option>
+          <option value="4280">Building 4280</option>
+          <option value="5017">Building 5017</option>
+          <option value="984">Building 984</option>
+        </select>
+      </div>
+
+      <div class="metrics" style="margin-top:18px">
+        <div class="metric"><b id="baseline">75.93</b><span>baseline predicted intensity</span></div>
+        <div class="metric"><b id="optimized">69.21</b><span>GA-optimized intensity</span></div>
+        <div class="metric"><b id="improvement">8.85%</b><span>predicted improvement</span></div>
+      </div>
+
+      <div class="result">
+        <div>Recommended upgrade package</div>
+        <div style="font-size:20px;font-weight:750;margin-top:8px" id="upgradeList">NWMNCL · SCHED · OCSN · RFCOOL</div>
+        <div class="bar"><i id="bar" style="width:35.4%"></i></div>
+        <div>For context: the COP31 ambition is a 25% reduction.</div>
+      </div>
+
+      <p class="note" style="margin-top:14px">
+        <b>How to read this:</b> the GA does not claim these upgrades physically guarantee this saving.
+        It modifies feasible variables in the trained scenario model and compares the model's baseline
+        and optimized predictions.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>3. Why these upgrades?</h2>
+      <p>The L1 model identifies variables associated with energy intensity, while the GA is restricted to variables that can plausibly be changed through building upgrades.</p>
+      <div class="flow">
+        <div class="step">Predictive variables</div>
+        <div class="arrow">+</div>
+        <div class="step">Actionable variables</div>
+        <div class="arrow">→</div>
+        <div class="step">Feasible upgrade package</div>
+      </div>
+      <p class="note" style="margin-top:14px">
+        This separation matters because variables such as energy expenditure or consumption are useful
+        for prediction but are not themselves retrofit interventions.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>4. What the GA is allowed to change</h2>
+      <p class="note">The project defines a whitelist of actionable variables. For binary measures, the GA can move an observed “No” state toward “Yes” while leaving non-actionable variables fixed.</p>
+      <table class="table">
+        <tr><th>Variable</th><th>Project interpretation</th></tr>
+        <tr><td>RENHVC</td><td>HVAC renovation</td></tr>
+        <tr><td>RENINS</td><td>Insulation renovation</td></tr>
+        <tr><td>RENWIN</td><td>Window renovation</td></tr>
+        <tr><td>NWMNCL</td><td>Cooling equipment measure</td></tr>
+        <tr><td>LED</td><td>LED lighting</td></tr>
+        <tr><td>SCHED</td><td>Lighting scheduling</td></tr>
+        <tr><td>OCSN</td><td>Occupancy sensors</td></tr>
+        <tr><td>PLGCTRL</td><td>Plug-load control</td></tr>
+        <tr><td>RFCOOL</td><td>Cooling efficiency measure</td></tr>
+      </table>
+      <p class="note">Additional actionable variables are included in the project's whitelist.</p>
+    </div>
+  </section>
+
+  <aside>
+    <div class="card">
+      <h2>5. Project results</h2>
+      <div class="metrics">
+        <div class="metric"><b>2.46%</b><span>mean predicted improvement</span></div>
+        <div class="metric"><b>8.85%</b><span>maximum predicted improvement</span></div>
+        <div class="metric"><b>0%</b><span>held-out buildings ≥25%</span></div>
+      </div>
+      <p class="note" style="margin-top:14px">
+        Scenario-model test R²: <b>0.4815</b>. The earlier Lasso model reported R² ≈ <b>0.4787</b>.
+        These are predictive associations, not measured retrofit savings.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>6. Top five GA candidates</h2>
+      <table class="table">
+        <tr><th>Building</th><th>Predicted gain</th><th>New upgrades</th></tr>
+        <tr><td>4724</td><td><b>8.85%</b></td><td>4</td></tr>
+        <tr><td>1771</td><td><b>8.82%</b></td><td>5</td></tr>
+        <tr><td>4280</td><td><b>8.80%</b></td><td>4</td></tr>
+        <tr><td>5017</td><td><b>8.79%</b></td><td>5</td></tr>
+        <tr><td>984</td><td><b>8.77%</b></td><td>5</td></tr>
+      </table>
+      <p class="note">These are the highest predicted improvements observed in the GA run.</p>
+    </div>
+
+    <div class="card">
+      <h2>7. What does 8.85% mean?</h2>
+      <p><b>It is a model-based counterfactual estimate — not a guaranteed engineering saving.</b></p>
+      <p class="note">
+        The GA asks: “If the building's feasible upgrade variables were changed, what would our trained
+        energy-intensity model predict?” It does not directly simulate HVAC physics, construction cost,
+        or measured post-retrofit consumption.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>8. The takeaway</h2>
+      <p><b>8.8% is a proof of concept, not the ceiling.</b></p>
+      <p class="note">
+        The result is constrained by historical CBECS data, limited GA search/sample size, and non-optimal
+        predictive variables. Better data, stronger modelling and broader optimisation are the next steps
+        toward the 25% ambition.
+      </p>
+      <p class="warning">25% was not achieved by this model.</p>
+    </div>
+  </aside>
+</div>
+<script>
+const buildings = {
+  "4724": {base:75.927953, opt:69.207167, eff:8.851531, upgrades:["NWMNCL","SCHED","OCSN","RFCOOL"]},
+  "1771": {base:103.070064, opt:93.978016, eff:8.821231, upgrades:["NWMNCL","SCHED","OCSN","PLGCTRL","RFCOOL"]},
+  "4280": {base:94.300000, opt:86.005000, eff:8.801712, upgrades:["NWMNCL","SCHED","OCSN","RFCOOL"]},
+  "5017": {base:89.100000, opt:81.270000, eff:8.791629, upgrades:["NWMNCL","SCHED","OCSN","PLGCTRL","RFCOOL"]},
+  "984":  {base:77.600000, opt:70.790000, eff:8.772603, upgrades:["NWMNCL","SCHED","OCSN","PLGCTRL","RFCOOL"]}
+};
+function showBuilding(){
+  const d=buildings[document.getElementById("buildingSelect").value];
+  document.getElementById("baseline").textContent=d.base.toFixed(2);
+  document.getElementById("optimized").textContent=d.opt.toFixed(2);
+  document.getElementById("improvement").textContent=d.eff.toFixed(2)+"%";
+  document.getElementById("upgradeList").textContent=d.upgrades.join(" · ");
+  document.getElementById("bar").style.width=Math.min(100,d.eff/25*100)+"%";
+}
+document.getElementById("buildingSelect").addEventListener("change",showBuilding);
+showBuilding();
+</script>
+</main>
+<script>
+const options = [
+  ["NWMNCL","Cooling efficiency"],["SCHED","Light scheduling"],["OCSN","Occupancy sensors"],
+  ["PLGCTRL","Plug-load control"],["RFCOOL","Cooling measure"],["LED","LED lighting"],
+  ["RENINS","Insulation renovation"],["RENWIN","Window renovation"],["RENHVC","HVAC renovation"],
+  ["MAINT","HVAC maintenance"]
+];
+const root=document.getElementById("upgrades");
+options.forEach(([id,name],i)=>{
+  const l=document.createElement("label");
+  l.innerHTML=`<input type="checkbox" data-id="${id}" ${i<4?"checked":""}> ${name}`;
+  root.appendChild(l);
+});
+function update(){
+  const ei=+document.getElementById("ei").value;
+  const max=+document.getElementById("max").value;
+  document.getElementById("eiVal").textContent=ei;
+  document.getElementById("maxVal").textContent=max;
+  const checked=[...root.querySelectorAll("input:checked")].slice(0,max);
+  root.querySelectorAll("input").forEach(x=>x.disabled=!x.checked && checked.length>=max);
+  // Illustrative UI score only; deliberately capped below the project's 25% target.
+  const weights={"NWMNCL":1.9,"SCHED":1.5,"OCSN":1.6,"PLGCTRL":1.3,"RFCOOL":1.8,"LED":1.0,"RENINS":1.2,"RENWIN":1.0,"RENHVC":1.7,"MAINT":0.8};
+  let score=0; checked.forEach(x=>score+=weights[x.dataset.id]||0);
+  score=Math.min(8.85, score*(0.75+Math.min(ei,180)/360));
+  document.getElementById("eff").textContent=score.toFixed(2)+"%";
+  document.getElementById("bar").style.width=Math.min(100,score/25*100)+"%";
+  document.getElementById("after").textContent="Illustrative predicted intensity after upgrades: "+(ei*(1-score/100)).toFixed(1)+" thousand Btu/sq ft";
+}
+document.getElementById("ei").addEventListener("input",update);
+document.getElementById("max").addEventListener("input",update);
+root.addEventListener("change",update); update();
+</script>
+</body>
+</html>
